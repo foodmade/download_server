@@ -79,6 +79,7 @@ public class CrawlerJob {
 
         StringRedisTemplate stringRedisTemplate = RedisUtil.getInstance().getStringRedisTemplate();
 
+        //使用管道模式
         stringRedisTemplate.executePipelined((RedisCallback<Object>) redisConnection -> {
             for (RecommendVideoEntity recommendVideoEntity : videoList) {
                 try {
