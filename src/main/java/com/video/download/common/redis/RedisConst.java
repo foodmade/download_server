@@ -18,4 +18,9 @@ public class RedisConst {
      */
     public static final String OVER_PAGE_SET = "overPageSet";
 
+    /**
+     * 机器人账户列表
+     */
+    public static final String ACCOUNT_QUEUE = "ACCOUNT_QUEUE";
+
 }

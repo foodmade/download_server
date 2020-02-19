@@ -3,6 +3,7 @@ package com.video.download;
 import com.alibaba.fastjson.JSONObject;
 import com.video.download.common.http.HttpUtils;
 import com.video.download.common.redis.RedisUtil;
+import com.video.download.dao.IAccountService;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,8 @@ import java.util.regex.Pattern;
  * @Description <>
  **/
 public class CommonTest extends DownloadApplicationTests{
+
+
 
     @Test
     public void testRedis(){

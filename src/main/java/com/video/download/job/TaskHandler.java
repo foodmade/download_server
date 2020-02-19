@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.video.download.common.domain.Request91Entity;
 import com.video.download.common.domain.Response91Entity;
 import com.video.download.common.encrypt.Encryption;
+import com.video.download.common.encrypt.EncryptionV2;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -34,7 +35,7 @@ public class TaskHandler implements Serializable {
     public Request91Entity buildRequest(){
         String currentTime = System.currentTimeMillis() + "";
         String timestamp = currentTime.substring(0,10);
-        String sign = Encryption.sign(timestamp,data);
+        String sign = EncryptionV2.sign(timestamp,data);
         return new Request91Entity(timestamp,data,sign);
     }
 

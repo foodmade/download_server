@@ -8,9 +8,12 @@ import com.video.download.common.domain.RecommendVideoEntity;
 import com.video.download.common.domain.Request91Entity;
 import com.video.download.common.domain.Response91Entity;
 import com.video.download.common.encrypt.Encryption;
+import com.video.download.common.encrypt.EncryptionV2;
 import com.video.download.common.http.HttpUtils;
 import com.video.download.common.redis.RedisConst;
 import com.video.download.common.redis.RedisUtil;
+import com.video.download.dao.IAccountService;
+import com.video.download.domain.entity.UUser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -24,7 +27,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.awt.event.KeyEvent;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -37,8 +42,13 @@ import java.util.stream.Collectors;
 @Slf4j
 public class CrawlerJob {
 
-    @Autowired
-    private TaskHandler taskHandler;
+    private final TaskHandler taskHandler;
+    private final IAccountService accountService;
+
+    public CrawlerJob(TaskHandler taskHandler,IAccountService accountService) {
+        this.taskHandler = taskHandler;
+        this.accountService = accountService;
+    }
 
     /**
      * 每隔20S获取一次91视频列表
@@ -58,7 +68,7 @@ public class CrawlerJob {
         }
 
         String originalStr = response91Entity.getData();
-        String decryptStr = Encryption.decrypt(originalStr);
+        String decryptStr = EncryptionV2.decrypt(originalStr);
 
 //        log.debug("原始data:{}", originalStr);
 //        log.debug("解密data:{}", decryptStr);
@@ -114,6 +124,36 @@ public class CrawlerJob {
             }
             return null;
         });
+    }
+
+    /**
+     * 刷新机器人账户列表
+     */
+    @Scheduled(fixedDelay = 1000 * 60 * 10)
+    public void refreshRobotAccount(){
+        List<UUser> robotUsers = accountService.getAllRobotAccount();
+        if(robotUsers == null){
+            return;
+        }
+
+        StringRedisTemplate stringRedisTemplate = RedisUtil.getInstance().getStringRedisTemplate();
+
+        //清空之前的账号缓存
+        RedisUtil.getInstance().del(RedisConst.ACCOUNT_QUEUE);
+
+        //缓存至redis中
+        stringRedisTemplate.executePipelined((RedisCallback<Object>) redisConnection -> {
+
+            StringRedisConnection redisConn = (StringRedisConnection)redisConnection;
+            robotUsers.forEach(user -> {
+                Map<String,String> userMap = new HashMap<>();
+                userMap.put("userName",user.getBoundCellphone());
+                userMap.put("password","123456");
+                redisConn.sAdd(RedisConst.ACCOUNT_QUEUE,JSON.toJSONString(userMap));
+            });
+            return null;
+        });
+        log.info("Refresh robot account success.");
     }
 
 }
