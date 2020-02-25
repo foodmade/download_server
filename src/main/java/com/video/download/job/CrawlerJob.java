@@ -15,6 +15,7 @@ import com.video.download.common.redis.RedisUtil;
 import com.video.download.dao.IAccountService;
 import com.video.download.domain.entity.UUser;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.connection.RedisConnection;
@@ -56,7 +57,9 @@ public class CrawlerJob {
     @Scheduled(fixedDelay = 1000 * 20)
     public void fetchPathJob(){
         Request91Entity request = taskHandler.buildRequest();
-        ResponseEntity<Response91Entity> responseEntity = HttpUtils.postForEntity(taskHandler.getUrl(),request.toMap(), Response91Entity.class);
+        ResponseEntity<Response91Entity> responseEntity = HttpUtils.sendPostForEntity(taskHandler.getUrl(),request.toMap(), Response91Entity.class);
+
+        log.info("Response data:{}",JSON.toJSONString(responseEntity));
 
         if(responseEntity.getStatusCode() != HttpStatus.OK){
             log.warn("获取91视频列表失败, httpCode:[{}]",responseEntity.getStatusCodeValue());
@@ -70,8 +73,8 @@ public class CrawlerJob {
         String originalStr = response91Entity.getData();
         String decryptStr = EncryptionV2.decrypt(originalStr);
 
-//        log.debug("原始data:{}", originalStr);
-//        log.debug("解密data:{}", decryptStr);
+        log.info("原始data:{}", originalStr);
+        log.info("解密data:{}", decryptStr);
 
         JSONObject jsonObject = JSONObject.parseObject(decryptStr);
         jsonObject = jsonObject.getJSONObject("data");
@@ -106,7 +109,9 @@ public class CrawlerJob {
                     StringRedisConnection redisConn = (StringRedisConnection)redisConnection;
                     //缓存格式. 视频播放地址MD5为key. recommendVideoEntity为data
                     String uri = CommonUtils.originalUrl(recommendVideoEntity.getPlayUrl());
-
+                    if(StringUtils.isBlank(uri)){
+                        continue;
+                    }
                     String key = CommonUtils.MD5(uri);
 
                     //判断是否为重复资源

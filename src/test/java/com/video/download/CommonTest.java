@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.video.download.common.http.HttpUtils;
 import com.video.download.common.redis.RedisUtil;
 import com.video.download.dao.IAccountService;
+import com.video.download.job.CrawlerJob;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,8 +22,6 @@ import java.util.regex.Pattern;
  **/
 public class CommonTest extends DownloadApplicationTests{
 
-
-
     @Test
     public void testRedis(){
         String url = "https://m3u8.cnkamax.com/useruploadfiles/37341e12d851dd9e55076aef8af0211f/37341e12d851dd9e55076aef8af0211f.m3u8?md5=M0F1UVFVbaz00nJGcME8tw";
@@ -34,4 +33,5 @@ public class CommonTest extends DownloadApplicationTests{
             System.out.println(s);
         }
     }
+
 }

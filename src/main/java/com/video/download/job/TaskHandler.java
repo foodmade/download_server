@@ -35,7 +35,7 @@ public class TaskHandler implements Serializable {
     public Request91Entity buildRequest(){
         String currentTime = System.currentTimeMillis() + "";
         String timestamp = currentTime.substring(0,10);
-        String sign = EncryptionV2.sign(timestamp,data);
+        String sign = Encryption.sign(timestamp,data);
         return new Request91Entity(timestamp,data,sign);
     }
 

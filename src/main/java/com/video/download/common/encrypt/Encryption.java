@@ -8,6 +8,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @Author xiaom
@@ -45,6 +47,9 @@ public class Encryption {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
+        System.out.println("sign1:" + sign);
+        System.out.println("data2:" + encrypt);
+        System.out.println("time3:" + timestamp);
         return sign;
     }
 
@@ -285,5 +290,4 @@ public class Encryption {
         }
 
     }
-
 }
