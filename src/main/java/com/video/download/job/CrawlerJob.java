@@ -26,8 +26,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-
-import java.awt.event.KeyEvent;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +41,8 @@ import java.util.stream.Collectors;
 @Slf4j
 public class CrawlerJob {
 
+    private static final Integer MAX_CACHE_TASK = 10;
+
     private final TaskHandler taskHandler;
     private final IAccountService accountService;
 
@@ -54,8 +54,12 @@ public class CrawlerJob {
     /**
      * 每隔20S获取一次91视频列表
      */
-    @Scheduled(fixedDelay = 1000 * 20)
+    @Scheduled(fixedDelay = 1000 * 5)
     public void fetchPathJob(){
+        //防止采集到的m3u8地址失效,需要进行时间控制,在任务未被采集器消耗完毕时,不执行采集m3u8任务
+        if(checkProgress()){
+            return;
+        }
         Request91Entity request = taskHandler.buildRequest();
         ResponseEntity<Response91Entity> responseEntity = HttpUtils.sendPostForEntity(taskHandler.getUrl(),request.toMap(), Response91Entity.class);
 
@@ -84,6 +88,16 @@ public class CrawlerJob {
         }
         //todo: 暂时只缓存到redis, Mysql后面考虑
         saveVideoList(videoList);
+    }
+
+    private boolean checkProgress() {
+
+        Long size = RedisUtil.getInstance().scard(RedisConst.DOWNLOAD_QUEUE);
+        if(size >= MAX_CACHE_TASK){
+            log.info("任务池剩余：" + size);
+            return true;
+        }
+        return false;
     }
 
     private void saveVideoList(List<RecommendVideoEntity> videoList) {

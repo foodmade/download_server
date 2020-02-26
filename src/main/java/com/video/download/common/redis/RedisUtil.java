@@ -231,6 +231,15 @@ public class RedisUtil {
         return stringRedisTemplate.opsForSet().isMember(key,val);
     }
 
+    /**
+     * Get the remaining length of the collection
+     * @param key Cache key
+     * @return size
+     */
+    public Long scard(String key){
+        return stringRedisTemplate.opsForSet().size(key);
+    }
+
 
     /**
      * 释放锁
