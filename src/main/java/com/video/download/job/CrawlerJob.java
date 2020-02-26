@@ -59,8 +59,6 @@ public class CrawlerJob {
         Request91Entity request = taskHandler.buildRequest();
         ResponseEntity<Response91Entity> responseEntity = HttpUtils.sendPostForEntity(taskHandler.getUrl(),request.toMap(), Response91Entity.class);
 
-        log.info("Response data:{}",JSON.toJSONString(responseEntity));
-
         if(responseEntity.getStatusCode() != HttpStatus.OK){
             log.warn("获取91视频列表失败, httpCode:[{}]",responseEntity.getStatusCodeValue());
            return;
@@ -73,8 +71,8 @@ public class CrawlerJob {
         String originalStr = response91Entity.getData();
         String decryptStr = EncryptionV2.decrypt(originalStr);
 
-        log.info("原始data:{}", originalStr);
-        log.info("解密data:{}", decryptStr);
+//        log.debug("原始data:{}", originalStr);
+//        log.debug("解密data:{}", decryptStr);
 
         JSONObject jsonObject = JSONObject.parseObject(decryptStr);
         jsonObject = jsonObject.getJSONObject("data");
@@ -108,11 +106,8 @@ public class CrawlerJob {
 
                     StringRedisConnection redisConn = (StringRedisConnection)redisConnection;
                     //缓存格式. 视频播放地址MD5为key. recommendVideoEntity为data
-                    String uri = CommonUtils.originalUrl(recommendVideoEntity.getPlayUrl());
-                    if(StringUtils.isBlank(uri)){
-                        continue;
-                    }
-                    String key = CommonUtils.MD5(uri);
+//                    String uri = recommendVideoEntity.getPlayUrl();
+                    String key = CommonUtils.MD5(recommendVideoEntity.getUuid());
 
                     //判断是否为重复资源
                     boolean isOver = RedisUtil.getInstance().isMember(RedisConst.OVER_PAGE_SET,key);

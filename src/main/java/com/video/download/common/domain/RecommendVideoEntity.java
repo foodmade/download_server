@@ -11,8 +11,8 @@ import java.util.List;
  * @Version 1.0.0
  * @Description <>
  **/
-@NoArgsConstructor
 @Data
+@NoArgsConstructor
 public class RecommendVideoEntity {
     private String id;
     private String thumb;
@@ -30,4 +30,46 @@ public class RecommendVideoEntity {
     private String nickName;
     private String status;
     private List<String> tags;
+    private String uuid;
+    private boolean hasBuy;
+    private boolean hasLongVideo;
+    private int follow;
+    private String is_hide;
+    private boolean isLogin;
+    private boolean isLiked;
+    private boolean isFollowed;
+    private String music_id;
+    private MusiceinfoBean musiceinfo;
+    private String news_num;
+    private NewsInfoBean news_info;
+
+    @NoArgsConstructor
+    @Data
+    public static class MusiceinfoBean {
+
+        private String idX;
+        private String titleX;
+        private String tagsX;
+        private String created_at;
+        private String refresh_at;
+        private String uuidX;
+        private String durationX;
+        private String source;
+        private String use_num;
+        private String statusX;
+        private String music_head;
+    }
+
+    @NoArgsConstructor
+    @Data
+    public static class NewsInfoBean {
+        private String idX;
+        private String uuidX;
+        private String content;
+        private String is_best;
+        private String photo_num;
+        private String video_num;
+        private String view_num;
+        private String img;
+    }
 }
