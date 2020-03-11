@@ -39,26 +39,7 @@ public class RecommendVideoEntity {
     private boolean isLiked;
     private boolean isFollowed;
     private String music_id;
-    private MusiceinfoBean musiceinfo;
     private String news_num;
-    private NewsInfoBean news_info;
-
-    @NoArgsConstructor
-    @Data
-    public static class MusiceinfoBean {
-
-        private String idX;
-        private String titleX;
-        private String tagsX;
-        private String created_at;
-        private String refresh_at;
-        private String uuidX;
-        private String durationX;
-        private String source;
-        private String use_num;
-        private String statusX;
-        private String music_head;
-    }
 
     @NoArgsConstructor
     @Data
