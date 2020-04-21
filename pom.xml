@@ -121,7 +121,46 @@
         </dependency>
     </dependencies>
 
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <package.environment>dev</package.environment>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>pro</id>
+            <properties>
+                <package.environment>pro</package.environment>
+            </properties>
+        </profile>
+    </profiles>
+
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*.properties</include>
+                    <include>**/*.xml</include>
+                    <include>**/*.yml</include>
+                </includes>
+                <excludes>
+                    <exclude>dev/*</exclude>
+                    <exclude>pro/*</exclude>
+                </excludes>
+                <filtering>true</filtering>
+            </resource>
+            <resource>
+                <directory>src/main/resources/${package.environment}</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+        <finalName>spiderServer-${package.environment}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

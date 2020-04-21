@@ -4,13 +4,15 @@ import com.alibaba.fastjson.JSONObject;
 import com.video.download.common.http.HttpUtils;
 import com.video.download.common.redis.RedisUtil;
 import com.video.download.dao.IAccountService;
+import com.video.download.dao.repository.SpiderControlRepository;
+import com.video.download.domain.entity.SpiderControl;
 import com.video.download.job.CrawlerJob;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.TestPropertySource;
 
-import java.util.HashMap;
-import java.util.Map;
+import javax.annotation.Resource;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -21,6 +23,7 @@ import java.util.regex.Pattern;
  * @Description <>
  **/
 public class CommonTest extends DownloadApplicationTests{
+
 
     @Test
     public void testRedis(){
@@ -33,5 +36,6 @@ public class CommonTest extends DownloadApplicationTests{
             System.out.println(s);
         }
     }
+
 
 }

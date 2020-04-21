@@ -4,7 +4,8 @@ public enum ExceptionEnum {
     SERVER_ERR("500","服务器内部错误"),
     TASKTYPE_ERR("10001","任务类型异常"),
     SUCCESS("200","成功"),
-    UNKNOWNERR("100101","未知错误");
+    UNKNOWNERR("100101","未知错误")
+    ;
 
     private String code;
 

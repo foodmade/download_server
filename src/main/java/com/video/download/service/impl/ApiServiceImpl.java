@@ -1,17 +1,18 @@
 package com.video.download.service.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.video.download.common.DateUtils;
 import com.video.download.common.context.HttpRequestContextHelper;
+import com.video.download.common.domain.BaseResult;
 import com.video.download.common.redis.RedisConst;
 import com.video.download.common.redis.RedisKeyBuild;
 import com.video.download.common.redis.RedisUtil;
+import com.video.download.core.taskPool.TaskPool;
 import com.video.download.service.ApiService;
+import com.video.download.service.CrawlerService;
 import com.video.download.vo.PushTaskVo;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.Date;
 
 import static com.video.download.common.CommonUtils.MD5;
 import static com.video.download.common.CommonUtils.originalUrl;
@@ -25,6 +26,9 @@ import static com.video.download.common.CommonUtils.originalUrl;
 @Service
 @Slf4j
 public class ApiServiceImpl implements ApiService {
+
+    @Autowired
+    private CrawlerService crawlerService;
 
     @Override
     public String getDownloadUrl() {
@@ -59,6 +63,24 @@ public class ApiServiceImpl implements ApiService {
         //以(时间:ip) 为key,记录推送成功的视频信息
         RedisUtil.getInstance().sadd(RedisKeyBuild.PUSH_FINISH_KEY + ":" + HttpRequestContextHelper.getContextRequest().getRemoteAddr()
                 ,pushTaskVo.getTask());
+    }
+
+    @Override
+    public BaseResult restoreSpiderStatus() {
+        crawlerService.restoreSpiderStatus();
+        return BaseResult.success(true);
+    }
+
+    @Override
+    public BaseResult generateTask() {
+        crawlerService.generateTask();
+        return BaseResult.success(true);
+    }
+
+    @Override
+    public BaseResult clearTaskPool() {
+        TaskPool.clear();
+        return BaseResult.success(true);
     }
 
     /**

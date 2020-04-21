@@ -1,5 +1,6 @@
 package com.video.download.service;
 
+import com.video.download.common.domain.BaseResult;
 import com.video.download.vo.PushTaskVo;
 
 /**
@@ -18,4 +19,19 @@ public interface ApiService {
      * 记录视频下载器推送的视频信息
      */
     void commitTaskStatus(PushTaskVo pushTaskVo);
+
+    /**
+     * 刷新爬虫状态
+     */
+    BaseResult restoreSpiderStatus();
+
+    /**
+     * 创建数据库定义的爬虫任务
+     */
+    BaseResult generateTask();
+
+    /**
+     * 清空任务池
+     */
+    BaseResult clearTaskPool();
 }

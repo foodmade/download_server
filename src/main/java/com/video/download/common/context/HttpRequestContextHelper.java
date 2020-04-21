@@ -59,4 +59,8 @@ public class HttpRequestContextHelper {
         HttpServletRequest request = getContextRequest();
         return Optional.ofNullable(request.getHeader(headerKey));
     }
+
+    public static String getRemoteHost(){
+        return getContextRequest().getRemoteHost();
+    }
 }

@@ -7,18 +7,16 @@ import com.video.download.common.CommonUtils;
 import com.video.download.common.domain.RecommendVideoEntity;
 import com.video.download.common.domain.Request91Entity;
 import com.video.download.common.domain.Response91Entity;
-import com.video.download.common.encrypt.Encryption;
 import com.video.download.common.encrypt.EncryptionV2;
 import com.video.download.common.http.HttpUtils;
 import com.video.download.common.redis.RedisConst;
 import com.video.download.common.redis.RedisUtil;
+import com.video.download.core.handler.AbsSave;
 import com.video.download.dao.IAccountService;
+import com.video.download.dao.repository.MoviesRepository;
+import com.video.download.domain.entity.Movies;
 import com.video.download.domain.entity.UUser;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
-import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.StringRedisConnection;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -26,6 +24,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +43,9 @@ public class CrawlerJob {
 
     private static final Integer MAX_CACHE_TASK = 10;
 
+    @Resource
+    private MoviesRepository moviesRepository;
+
     private final TaskHandler taskHandler;
     private final IAccountService accountService;
 
@@ -54,7 +57,7 @@ public class CrawlerJob {
     /**
      * 每隔20S获取一次91视频列表
      */
-    @Scheduled(fixedDelay = 1000 * 5)
+//    @Scheduled(fixedDelay = 1000 * 5)
     public void fetchPathJob(){
         //防止采集到的m3u8地址失效,需要进行时间控制,在任务未被采集器消耗完毕时,不执行采集m3u8任务
         if(checkProgress()){
@@ -144,7 +147,7 @@ public class CrawlerJob {
     /**
      * 刷新机器人账户列表
      */
-    @Scheduled(fixedDelay = 1000 * 60 * 10)
+//    @Scheduled(fixedDelay = 1000 * 60 * 10)
     public void refreshRobotAccount(){
         List<UUser> robotUsers = accountService.getAllRobotAccount();
         if(robotUsers == null){
@@ -169,6 +172,16 @@ public class CrawlerJob {
             return null;
         });
         log.info("Refresh robot account success.");
+    }
+
+    @Scheduled(fixedDelay = 1000 * 10)
+    public void saveMovies(){
+        if(AbsSave.finishCache.isEmpty()){
+            return;
+        }
+        List<Movies> movies = AbsSave.getFinishCache();
+        moviesRepository.saveAll(movies);
+        log.info("保存处理完毕的数据成功,长度:[{}]",movies.size());
     }
 
 }

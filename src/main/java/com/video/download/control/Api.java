@@ -49,9 +49,28 @@ public class Api {
     /**
      * 提交已推送完毕的视频信息
      */
-    @PostMapping(value = "commitTaskStatus")
+    @PostMapping(value = "/commitTaskStatus")
     public BaseResult commitTaskStatus(@RequestBody PushTaskVo pushTaskVo){
         apiService.commitTaskStatus(pushTaskVo);
         return BaseResult.success(null);
+    }
+
+    /**
+     * 初始化爬虫为最初始状态 (用于更新配置文件或者解析器时调用)
+     * 调用此接口后,所有爬虫将会执行更新config和parser操作
+     */
+    @GetMapping(value = "/restoreSpiderStatus")
+    public BaseResult restoreSpiderStatus(){
+        return apiService.restoreSpiderStatus();
+    }
+
+    /**
+     * 生成爬虫任务
+     * 1 查询数据库中处于未激活状态的任务表达式
+     * 2 创建任务到本机任务池
+     */
+    @GetMapping(value = "/generateTask")
+    public BaseResult generateTask(){
+        return apiService.generateTask();
     }
 }
